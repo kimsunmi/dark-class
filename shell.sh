@@ -1,0 +1,31 @@
+make clean
+make examples
+
+ ./PC_Setup 1200 10
+ ./PC_PROVER_EVAL 
+ ./PC_VERIFIER_EVAL
+
+# ./PC_Setup 1200 11
+# ./PC_PROVER_EVAL 
+# ./PC_VERIFIER_EVAL
+
+# ./PC_Setup 1200 12
+# ./PC_PROVER_EVAL 
+# ./PC_VERIFIER_EVAL
+
+# ./PC_Setup 1200 13
+# ./PC_PROVER_EVAL 
+# ./PC_VERIFIER_EVAL
+
+# ./PC_Setup 1200 14
+# ./PC_PROVER_EVAL 
+# ./PC_VERIFIER_EVAL
+
+# ./PC_Setup 1200 15
+# ./PC_PROVER_EVAL 
+# ./PC_VERIFIER_EVAL
+
+# ./PC_Setup 1200 16
+# ./PC_PROVER_EVAL 
+# ./PC_VERIFIER_EVAL
+
