@@ -8,11 +8,12 @@ int main()
 	unsigned long long int RunTime_file_IO = 0, RunTime_commit = 0;
 
 	_struct_pp_ pp;
-	_struct_commit_ cm, cm2;
+	_struct_commit_ cm, cm2, cm3;
 	_struct_poly_ poly;
 
 	commit_init(&cm);
 	commit_init(&cm2);
+	commit_init(&cm3);
 	
 	TimerOn();
 	Read_pp("./Txt/pp.txt", &pp);
@@ -21,22 +22,26 @@ int main()
 
 
 	TimerOn();
+	// 모든 precom을 포함한 commit
 	commit_new_precom(&cm, pp, poly);
 	RunTime_commit = TimerOff();
-	printf("Commit__OLD_ %12llu [us]\n", RunTime_commit);
-	qfb_print(cm.C);
-	printf("\r\n");
+	printf("Cm_w/_time_AllT %12llu [us]\n", RunTime_commit);
+
+	// TimerOn();
+	// // g만 com하고 이후 commit 진행
+	// commit_new(&cm2, pp, poly);
+	// RunTime_commit = TimerOff();
+	// printf("Cm_w/_TIME_OnlyGT %12llu [us]\n", RunTime_commit);
+
 	TimerOn();
-	commit_new(&cm2, pp, poly);
+	commit_new_old(&cm3, pp, poly);
 	RunTime_commit = TimerOff();
-	qfb_print(cm2.C);
-	printf("\r\n");
+	printf("Commit_w/o_TIME_ %12llu [us]\n", RunTime_commit);
 
 	TimerOn();
 	Write_Commit("./Txt/commit.txt", &cm);
 	RunTime_file_IO += TimerOff();
 
-	printf("Commit_TIME_ %12llu [us]\n", RunTime_commit);
 	printf("Commit_I/O__ %12llu [us]\n", RunTime_file_IO);
 
 	fp = fopen("record/commit.txt", "a+");

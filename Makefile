@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS := -g -lm -lcrypto -lgmp -lflint -lmpfr -lantic
+CFLAGS := -g -lm -lcrypto -lgmp -lflint -lmpfr -lantic -fsanitize=address
 
 SOURCE_DIR = source/
 TEST_SOURCE_DIR = examples/

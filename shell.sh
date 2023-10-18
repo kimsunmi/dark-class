@@ -2,6 +2,7 @@ make clean
 make examples
 
  ./PC_Setup 1200 10
+ ./PC_Commit
  ./PC_PROVER_EVAL 
  ./PC_VERIFIER_EVAL
 

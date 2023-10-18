@@ -36,6 +36,13 @@
 		_struct_commit_ CR;
 	}_struct_proof_;
 
+	typedef struct {
+		int prover_CL;
+		int prover_CR;
+		int prover_POE;
+		int prover_total;
+	}_struct_prover_timer_;
+
 	int pp_init(_struct_pp_* pp);
 	int pp_clear(_struct_pp_* pp);
 	int KeyGen_Class_setup( _struct_pp_* pp, const int lamda, const int logD);
@@ -43,6 +50,7 @@
 	int commit_init(_struct_commit_* cm);
 	int commit_clear(_struct_commit_* cm);
 	int commit_new(_struct_commit_* cm, _struct_pp_ pp, _struct_poly_ poly);
+	int commit_new_old(_struct_commit_* cm, _struct_pp_ pp, _struct_poly_ poly);
 	int commit_new_precom(_struct_commit_* cm, _struct_pp_ pp, _struct_poly_ poly);
 
 	int pf_init(_struct_proof_ *pf);

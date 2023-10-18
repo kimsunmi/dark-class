@@ -128,6 +128,7 @@ int Write_proof(const char* path, _struct_proof_ pf, const char* mode)
 }
 
 //"./Txt/poly.txt"
+// why make index i array from 1 to d+1
 int make_poly(const char* path, unsigned int d)
 {
 	fmpz_t fmpz_tmp;
@@ -142,8 +143,8 @@ int make_poly(const char* path, unsigned int d)
 
 	flint_randinit(state);
 	for(int i =0; i<d; i++){
-		fmpz_set_ui(fmpz_tmp, 1+i); // random 
-		//fmpz_randbits(fmpz_tmp, state, 32);
+		// fmpz_set_ui(fmpz_tmp, 1+i);
+		fmpz_randbits(fmpz_tmp, state, 32);  // random 
 		fmpz_abs(fmpz_tmp, fmpz_tmp);
 		flag *= fprintf(fp, "%s ", fmpz_get_str(NULL, 16, fmpz_tmp));
 	}

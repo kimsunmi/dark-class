@@ -19,9 +19,11 @@ int main(int argc, char *argv[])
 		LogD = atoi(argv[2]);	
 	}
 	else
-		LogD = 3;
+		LogD = 10;
 	
 	Degree = (1<<(LogD));
+	
+	make_poly("./Txt/poly.txt", Degree);
 	
 	TimerOn();
 	pp_init(&pp);
@@ -41,7 +43,6 @@ int main(int argc, char *argv[])
 	fprintf(fp, "%d %d %llu %llu\n", security_level, Degree, RunTime_file_IO, RunTime_eval);			
 	fclose(fp);
 
-	make_poly("./Txt/poly.txt", Degree);
 	pp_clear(&pp);
 
 	return 0;

@@ -8,7 +8,7 @@ int main()
 	int d_;
     FILE *fp;
   	_struct_pp_ pp;
-	_struct_commit_ cm;
+	_struct_commit_ cm, cm2;
 	_struct_poly_ poly;
 
 	fp = fopen("./Txt/proof.txt", "w");
@@ -23,16 +23,31 @@ int main()
 	Read_pp("./Txt/pp.txt", &pp);
 	Read_poly("./Txt/poly.txt", &poly);
 	RunTime_file_IO = TimerOff();
-	
+
+	// 모든 테이블 precom 후 commit
 	TimerOn();
-	commit_new(&cm, pp, poly);
+	commit_new_precom(&cm, pp, poly);
+	RunTime_eval = TimerOff();
+
+	printf("Cm_w/_Alltab %12llu [us]\n", RunTime_eval);
+
+	// // cm에 필요한 g만 precom 후 commit
+	// TimerOn();
+	// commit_new(&cm, pp, poly);
+	// RunTime_eval = TimerOff();
+
+	// printf("Cm_w/_TIME_OnlyGT %12llu [us]\n", RunTime_eval);
+
+	// precom 없이 commit 계산
+	TimerOn();
+	commit_new_old(&cm2, pp, poly);
 	RunTime_eval = TimerOff();
 
 	TimerOn();
 	Write_Commit("./Txt/commit.txt", &cm);
 	RunTime_file_IO += TimerOff();
 
-	printf("Commit_TIME_ %12llu [us]\n", RunTime_eval);
+	printf("Commit_w/o_Tab_ %12llu [us]\n", RunTime_eval);
 	printf("Commit_I/O__ %12llu [us]\n", RunTime_file_IO);
 
 	fp = fopen("record/commit.txt", "a+");
@@ -60,7 +75,7 @@ int main()
 	
 	printf("EVAL_PROVER_ %12llu [us]\n", RunTime_eval);
 	printf("EVAL___I/O__ %12llu [us]\n", RunTime_file_IO);
-
+	fmpz_print(pp.G);
 	fp = fopen("record/eval_prove.txt", "a+");
 	fprintf(fp, "%d %d %llu %llu\n", pp.security_level, d_, RunTime_file_IO, RunTime_eval);			
 	fclose(fp);
