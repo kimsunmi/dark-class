@@ -21,7 +21,6 @@ int commit_new_precom(_struct_commit_* cm, _struct_pp_ pp, _struct_poly_ poly)
 	{
 		TimerOff();
 		printf("Start precomputation\n");
-		TimerOn();
 		d = poly.d + 1;
 		if(isfirst == 0) isfirst = 0;
 		// qfb_t 크기를 d개만큼 할당 맞는지
@@ -35,6 +34,8 @@ int commit_new_precom(_struct_commit_* cm, _struct_pp_ pp, _struct_poly_ poly)
 		qfb_init(qfb_q_pt[0][0]);
 		qfb_set(qfb_q_pt[0][0], pp.g);
 
+		// only g
+		TimerOn();
 		for(i=1; i<d; i++)
 		{
 			qfb_init(qfb_q_pt[i][0]);
@@ -43,6 +44,11 @@ int commit_new_precom(_struct_commit_* cm, _struct_pp_ pp, _struct_poly_ poly)
 			//printf("%4.2lf%%\n", 100.0*(i)/(d));
 		}
 
+		RunTime_commit = TimerOff();
+		printf("Commit__PRE_G_ %12llu [us]\n", RunTime_commit);
+		
+
+		
 		for(i=0; i<d; i++)
 		{
 			for(j=1; j < fmpz_bits(pp.q); j++)
@@ -53,13 +59,10 @@ int commit_new_precom(_struct_commit_* cm, _struct_pp_ pp, _struct_poly_ poly)
 				//printf("%4.2lf%%\n", 100.0*(fmpz_bits(pp.q)*i+j)/(fmpz_bits(pp.q)*d));
 			}
 		}
-
-		RunTime_commit = TimerOff();
-		printf("Commit__PRE_ %12llu [us]\n", RunTime_commit);
 		TimerOn();
 	}
 
-	//////////
+	////////// cm g
 	for(i = poly.d - 1; i >= 0; i--)
 	{
 		qfb_principal_form(qfb_tmp, pp.G);
@@ -69,7 +72,7 @@ int commit_new_precom(_struct_commit_* cm, _struct_pp_ pp, _struct_poly_ poly)
 			if(fmpz_tstbit(poly.Fx[i], j) == 1)
 			{
 				qfb_nucomp(qfb_tmp, qfb_tmp, qfb_q_pt[i][j], pp.G, pp.L);
-				qfb_reduce(qfb_tmp, qfb_tmp, pp.G);		
+				qfb_reduce(qfb_tmp, qfb_tmp, pp.G);				
 			}
 		}
 		//qfb_pow_with_root(qfb_tmp, qfb_q_pt[i], pp.G, poly.Fx[i], pp.L);
@@ -88,6 +91,7 @@ int commit_new(_struct_commit_* cm, _struct_pp_ pp, _struct_poly_ poly)
 	unsigned long long int RunTime_file_IO = 0, RunTime_commit = 0;
 
 	int flag = 1, i = 0;
+	int qbit = fmpz_bits(pp.q)-1;
 	qfb_t qfb_tmp;
 
 	qfb_init(qfb_tmp);
@@ -95,7 +99,7 @@ int commit_new(_struct_commit_* cm, _struct_pp_ pp, _struct_poly_ poly)
 	
 	/////pre computation
 	static int isfirst = 1;
-	static qfb_t* qfb_q_pt;
+	static qfb_t** qfb_q_pt;
 	static int d;
 
 	if(isfirst || poly.d > d)
@@ -113,16 +117,22 @@ int commit_new(_struct_commit_* cm, _struct_pp_ pp, _struct_poly_ poly)
 		}
 		else
 			isfirst = 0;
-		(qfb_q_pt) = (qfb_t*)calloc(d, sizeof(qfb_t));
+		(qfb_q_pt) = (qfb_t**)calloc(d, sizeof(qfb_t*));
 
-		qfb_init(qfb_q_pt[0]);
+		for(i=0; i<d; i++){
+			(qfb_q_pt[i]) = (qfb_t*)calloc(qbit, sizeof(qfb_t));
+		}
+		for(int i = 0; i < d; i++)
+			for(int j = 0; j < qbit; j++)
+				qfb_init(qfb_q_pt[i][j]);
+
 		qfb_set(qfb_q_pt[0], pp.g);
 
 		for(i=1; i<d; i++)
 		{
-			qfb_init(qfb_q_pt[i]);
-			qfb_pow_with_root(qfb_q_pt[i], qfb_q_pt[i-1], pp.G, pp.q, pp.L);
-			qfb_reduce(qfb_q_pt[i], qfb_q_pt[i], pp.G);
+			qfb_init(qfb_q_pt[i][0]);
+			qfb_pow_with_root(qfb_q_pt[i][0], qfb_q_pt[i-1][0], pp.G, pp.q, pp.L);
+			qfb_reduce(qfb_q_pt[i][0], qfb_q_pt[i][0], pp.G);
 		}
 
 		RunTime_commit = TimerOff();
@@ -138,7 +148,7 @@ int commit_new(_struct_commit_* cm, _struct_pp_ pp, _struct_poly_ poly)
 		// 	(int)fmpz_bits(qfb_tmp->c),
 		// 	(int)fmpz_bits(poly.Fx[i])
 		// );
-		qfb_pow_with_root(qfb_tmp, qfb_q_pt[i], pp.G, poly.Fx[i], pp.L);
+		qfb_pow_with_root(qfb_tmp, qfb_q_pt[i][0], pp.G, poly.Fx[i], pp.L);
 		qfb_reduce(qfb_tmp, qfb_tmp, pp.G);
 		qfb_nucomp(cm->C, cm->C, qfb_tmp, pp.G, pp.L);
 		qfb_reduce(cm->C, cm->C, pp.G);

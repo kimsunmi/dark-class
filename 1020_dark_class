@@ -1,0 +1,184 @@
+
+================ compile w/ optimization option -O2 ================
+================ test n = 7 ================
+SETUP....
+log(d) 7 d-128 qbit : 2^4517
+KeyGen_Time_        22837 [us]
+KeyGen_I/O__           79 [us]
+
+COMMIT....
+Start precomputation
+Commit__PRE_      5341903 [us]
+Cm_w/_time_AllT        10880 [us]
+Commit_w/o_TIME_      2372311 [us]
+Commit_I/O__          430 [us]
+
+OPEN....
+Start precomputation
+Commit__PRE_      6855427 [us]
+Cm_w/_Alltab        10492 [us]
+Start precomputation
+Commit__PRE_      2382781 [us]
+Cm_w/_TIME_OnlyGT        25206 [us]
+Commit_w/o_Tab_      3644864 [us]
+Commit_I/O__          513 [us]
+EVAL_PROVER_Total      7794045 [us]
+EVAL_PROVER_CL       133275 [us]
+EVAL_PROVER_CR       131758 [us]
+EVAL_PROVER_POE      7521472 [us]
+EVAL_PROVER_           11 [us]
+EVAL___I/O__           49 [us]
+
+VERIFY....
+Verify Success!!
+EVAL_VERIFY_        39798 [us]
+VERIFY_I/O__          289 [us]
+
+================ test n = 8 ================
+SETUP....
+log(d) 8 d-256 qbit : 2^5253
+KeyGen_Time_        88250 [us]
+KeyGen_I/O__          135 [us]
+
+COMMIT....
+Start precomputation
+Commit__PRE_     13992225 [us]
+Cm_w/_time_AllT        21476 [us]
+Commit_w/o_TIME_      6585448 [us]
+Commit_I/O__          488 [us]
+
+OPEN....
+Start precomputation
+Commit__PRE_     13161192 [us]
+Cm_w/_Alltab        23183 [us]
+Start precomputation
+Commit__PRE_      7153221 [us]
+Cm_w/_TIME_OnlyGT        52786 [us]
+Commit_w/o_Tab_      7126091 [us]
+Commit_I/O__          542 [us]
+EVAL_PROVER_Total     21305790 [us]
+EVAL_PROVER_CL       293459 [us]
+EVAL_PROVER_CR       283936 [us]
+EVAL_PROVER_POE     20718434 [us]
+EVAL_PROVER_            8 [us]
+EVAL___I/O__           50 [us]
+
+VERIFY....
+Verify Success!!
+EVAL_VERIFY_        45966 [us]
+VERIFY_I/O__          275 [us]
+
+================ test n = 9 ================
+SETUP....
+log(d) 9 d-512 qbit : 2^6181
+KeyGen_Time_        19162 [us]
+KeyGen_I/O__          163 [us]
+
+COMMIT....
+Start precomputation
+Commit__PRE_     33030601 [us]
+Cm_w/_time_AllT        71983 [us]
+Commit_w/o_TIME_     15901335 [us]
+Commit_I/O__          456 [us]
+
+OPEN....
+Start precomputation
+Commit__PRE_     34656643 [us]
+Cm_w/_Alltab        42250 [us]
+Start precomputation
+Commit__PRE_     13937070 [us]
+Cm_w/_TIME_OnlyGT       168430 [us]
+Commit_w/o_Tab_     13869805 [us]
+Commit_I/O__          602 [us]
+EVAL_PROVER_Total     49445785 [us]
+EVAL_PROVER_CL       539100 [us]
+EVAL_PROVER_CR       527483 [us]
+EVAL_PROVER_POE     48369561 [us]
+EVAL_PROVER_           11 [us]
+EVAL___I/O__           65 [us]
+
+VERIFY....
+Verify Success!!
+EVAL_VERIFY_        50771 [us]
+VERIFY_I/O__          331 [us]
+
+================ test n = 10 ================
+SETUP....
+log(d) 10 d-1024 qbit : 2^7045
+KeyGen_Time_       116754 [us]
+KeyGen_I/O__          132 [us]
+
+COMMIT....
+Start precomputation
+Commit__PRE_     79210130 [us]
+Cm_w/_time_AllT       133099 [us]
+Commit_w/o_TIME_     33976938 [us]
+Commit_I/O__          501 [us]
+
+OPEN....
+Start precomputation
+Commit__PRE_     81768384 [us]
+Cm_w/_Alltab       144308 [us]
+Start precomputation
+Commit__PRE_     34536431 [us]
+Cm_w/_TIME_OnlyGT       218441 [us]
+Commit_w/o_Tab_     34842832 [us]
+Commit_I/O__          582 [us]
+EVAL_PROVER_Total    115269246 [us]
+EVAL_PROVER_CL      1081160 [us]
+EVAL_PROVER_CR      1083312 [us]
+EVAL_PROVER_POE    113093532 [us]
+EVAL_PROVER_           10 [us]
+EVAL___I/O__          104 [us]
+
+VERIFY....
+Verify Success!!
+EVAL_VERIFY_        56487 [us]
+VERIFY_I/O__          294 [us]
+
+================ test n = 11 ================
+SETUP....
+log(d) 11 d-2048 qbit : 2^7973
+KeyGen_Time_        14125 [us]
+KeyGen_I/O__          144 [us]
+
+COMMIT....
+Start precomputation
+Commit__PRE_    181061007 [us]
+Cm_w/_time_AllT       179016 [us]
+Commit_w/o_TIME_     82179506 [us]
+Commit_I/O__          819 [us]
+
+OPEN....
+Start precomputation
+Commit__PRE_    186216219 [us]
+Cm_w/_Alltab       195524 [us]
+Start precomputation
+Commit__PRE_     83257410 [us]
+Cm_w/_TIME_OnlyGT       690403 [us]
+Commit_w/o_Tab_     83129885 [us]
+Commit_I/O__          995 [us]
+EVAL_PROVER_Total    267356496 [us]
+EVAL_PROVER_CL      2470394 [us]
+EVAL_PROVER_CR      2448500 [us]
+EVAL_PROVER_POE    262421983 [us]
+EVAL_PROVER_           15 [us]
+EVAL___I/O__          269 [us]
+
+VERIFY....
+Verify Success!!
+EVAL_VERIFY_       108235 [us]
+VERIFY_I/O__          818 [us]
+
+================ test n = 12 ================
+SETUP....
+log(d) 12 d-4096 qbit : 2^8965
+KeyGen_Time_       188538 [us]
+KeyGen_I/O__          171 [us]
+
+COMMIT....
+
+OPEN....
+
+VERIFY....
+

@@ -1,0 +1,74 @@
+
+================ compile w/ optimization option -O2 ================
+================ test n = 7 ================
+SETUP....
+log(d) 7 d-128 qbit : 2^4517
+KeyGen_Time_        30746 [us]
+KeyGen_I/O__           90 [us]
+
+OPEN....
+Start precomputation
+Commit__PRE_      2584654 [us]
+Cm_w/_TIME_OnlyGT        25693 [us]
+Commit_w/o_Tab_      2519192 [us]
+Commit_I/O__          455 [us]
+EVAL_PROVER_Total      8188083 [us]
+EVAL_PROVER_CL       134025 [us]
+EVAL_PROVER_CR       131834 [us]
+EVAL_PROVER_POE      7915211 [us]
+EVAL_PROVER_            9 [us]
+EVAL___I/O__           35 [us]
+
+VERIFY....
+Verify Success!!
+EVAL_VERIFY_        38060 [us]
+VERIFY_I/O__          198 [us]
+
+================ test n = 8 ================
+SETUP....
+log(d) 8 d-256 qbit : 2^5253
+KeyGen_Time_        70935 [us]
+KeyGen_I/O__          151 [us]
+
+OPEN....
+Start precomputation
+Commit__PRE_      6823252 [us]
+Cm_w/_TIME_OnlyGT        85768 [us]
+Commit_w/o_Tab_      6315023 [us]
+Commit_I/O__          462 [us]
+EVAL_PROVER_Total     20252483 [us]
+EVAL_PROVER_CL       307695 [us]
+EVAL_PROVER_CR       306370 [us]
+EVAL_PROVER_POE     19629775 [us]
+EVAL_PROVER_            9 [us]
+EVAL___I/O__           52 [us]
+
+VERIFY....
+Verify Success!!
+EVAL_VERIFY_        45373 [us]
+VERIFY_I/O__          216 [us]
+
+================ test n = 9 ================
+SETUP....
+log(d) 9 d-512 qbit : 2^6181
+KeyGen_Time_       107222 [us]
+KeyGen_I/O__          111 [us]
+
+OPEN....
+Start precomputation
+Commit__PRE_     14937272 [us]
+Cm_w/_TIME_OnlyGT       107331 [us]
+Commit_w/o_Tab_     13246235 [us]
+Commit_I/O__          461 [us]
+EVAL_PROVER_Total     47718393 [us]
+EVAL_PROVER_CL       567625 [us]
+EVAL_PROVER_CR       562965 [us]
+EVAL_PROVER_POE     46578007 [us]
+EVAL_PROVER_            9 [us]
+EVAL___I/O__           69 [us]
+
+VERIFY....
+Verify Success!!
+EVAL_VERIFY_        53632 [us]
+VERIFY_I/O__          326 [us]
+

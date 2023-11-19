@@ -1,32 +1,27 @@
-make clean
+#!/bin/bash
+
+FILENAME="./1119_dark_class"
+
+echo "" > ${FILENAME}
+make clean_all
 make examples
 
- ./PC_Setup 1200 10
- ./PC_Commit
- ./PC_PROVER_EVAL 
- ./PC_VERIFIER_EVAL
+echo "================ compile w/ optimization option -O2 ================" >> ${FILENAME}
 
-# ./PC_Setup 1200 11
-# ./PC_PROVER_EVAL 
-# ./PC_VERIFIER_EVAL
-
-# ./PC_Setup 1200 12
-# ./PC_PROVER_EVAL 
-# ./PC_VERIFIER_EVAL
-
-# ./PC_Setup 1200 13
-# ./PC_PROVER_EVAL 
-# ./PC_VERIFIER_EVAL
-
-# ./PC_Setup 1200 14
-# ./PC_PROVER_EVAL 
-# ./PC_VERIFIER_EVAL
-
-# ./PC_Setup 1200 15
-# ./PC_PROVER_EVAL 
-# ./PC_VERIFIER_EVAL
-
-# ./PC_Setup 1200 16
-# ./PC_PROVER_EVAL 
-# ./PC_VERIFIER_EVAL
-
+for i in {7..9}
+do
+    echo "================ test n = $i ================"
+    echo "================ test n = $i ================" >> ${FILENAME}
+    echo "SETUP...."
+    echo "SETUP...." >>  ${FILENAME}
+    ./PC_Setup 512 $i >> ${FILENAME}
+    echo >> ${FILENAME}
+    echo "OPEN...."
+    echo "OPEN...." >>  ${FILENAME}
+    ./PC_PROVER_EVAL >> ${FILENAME}
+    echo >>  ${FILENAME}
+    echo "VERIFY...."
+    echo "VERIFY...." >>  ${FILENAME}
+    ./PC_VERIFIER_EVAL >> ${FILENAME}
+    echo >>  ${FILENAME}
+done
