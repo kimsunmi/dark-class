@@ -6,7 +6,7 @@ int main(int argc, char *argv[])
 {
 	FILE *fp;
 	int LogD, Degree;
-	int security_level = 300;
+	int security_level = 512;
 	unsigned long long int RunTime_eval = 0, RunTime_file_IO = 0;
 	_struct_pp_ pp;
 
@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
 	
 	Degree = (1<<(LogD));
 	
-	make_poly("./Txt/poly.txt", Degree);
+	make_poly("./Txt/poly.txt", Degree, LogD);
 	
 	TimerOn();
 	pp_init(&pp);

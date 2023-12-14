@@ -1,6 +1,6 @@
 #!/bin/bash
 
-FILENAME="./1119_dark_class"
+FILENAME="./1131_dark_class"
 
 echo "" > ${FILENAME}
 make clean_all
@@ -8,7 +8,7 @@ make examples
 
 echo "================ compile w/ optimization option -O2 ================" >> ${FILENAME}
 
-for i in {7..9}
+for i in {7..11}
 do
     echo "================ test n = $i ================"
     echo "================ test n = $i ================" >> ${FILENAME}

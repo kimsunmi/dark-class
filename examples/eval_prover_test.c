@@ -60,30 +60,30 @@ int main()
 	poly_clear(&poly);
 	////////////////////////////////////////////////////////////////////////////	
 
-    pp_init(&pp);
-    commit_init(&cm);
+    // pp_init(&pp);
+    // commit_init(&cm);
 	
-	TimerOn();
-	Read_pp("./Txt/pp.txt", &pp);
-	Read_Commit("./Txt/commit.txt", &cm);
-	Read_poly("./Txt/poly.txt", &poly);
-	RunTime_file_IO = TimerOff();
-	d_ = poly.d;
+	// TimerOn();
+	// Read_pp("./Txt/pp.txt", &pp);
+	// Read_Commit("./Txt/commit.txt", &cm);
+	// Read_poly("./Txt/poly.txt", &poly);
+	// RunTime_file_IO = TimerOff();
+	// d_ = poly.d;
 
-	TimerOn();
-	Eval_prover(&pp, &cm, &poly);
-	RunTime_eval = TimerOff();
+	// TimerOn();
+	// Eval_prover(&pp, &cm, &poly, 0);
+	// RunTime_eval = TimerOff();
 	
-	printf("EVAL_PROVER_ %12llu [us]\n", RunTime_eval);
-	printf("EVAL___I/O__ %12llu [us]\n", RunTime_file_IO);
-	// fmpz_print(pp.G);
-	fp = fopen("record/eval_prove.txt", "a+");
-	fprintf(fp, "%d %d %llu %llu\n", pp.security_level, d_, RunTime_file_IO, RunTime_eval);			
-	fclose(fp);
+	// printf("EVAL_PROVER_ %12llu [us]\n", RunTime_eval);
+	// printf("EVAL___I/O__ %12llu [us]\n", RunTime_file_IO);
+	// // fmpz_print(pp.G);
+	// fp = fopen("record/eval_prove.txt", "a+");
+	// fprintf(fp, "%d %d %llu %llu\n", pp.security_level, d_, RunTime_file_IO, RunTime_eval);			
+	// fclose(fp);
 
-	pp_clear(&pp);
-	commit_clear(&cm);	
-	poly_clear(&poly);
+	// pp_clear(&pp);
+	// commit_clear(&cm);	
+	// poly_clear(&poly);
 
 	return 0;
 }

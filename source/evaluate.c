@@ -3,8 +3,10 @@
 #include "../hedder/poe.h"
 #include "../hedder/util.h"
 
-int get_alpha_SHA256( fmpz_t output, fmpz_t p, fmpz_t yL, fmpz_t yR, qfb_t CL, qfb_t CR )
+int get_alpha_SHA256( fmpz_t output, fmpz_t p, fmpz_t yL, fmpz_t yR, qfb_t CL, qfb_t CR, int lambda )
 {
+	fmpz_t tmp;
+	fmpz_init(tmp);
     unsigned char digest[SHA256_DIGEST_LENGTH]={0};
 	unsigned char mdString[SHA256_DIGEST_LENGTH*2+1]={0};
 
@@ -30,8 +32,15 @@ int get_alpha_SHA256( fmpz_t output, fmpz_t p, fmpz_t yL, fmpz_t yR, qfb_t CL, q
           sprintf(&mdString[i*2], "%02x", (unsigned int)digest[i]);
 	
 	fmpz_set_str(output, mdString, 16);
-	fmpz_mod(output, output, p);
-	fmpz_tdiv_q_2exp(output,output,1);
+
+	fmpz_set_d_2exp(tmp, 1, lambda);
+	fmpz_sub_ui(tmp, tmp, 1);
+	fmpz_mod(output, output, tmp);
+	// fmpz_mod(output, output, p);
+	fmpz_tdiv_q_2exp(output,output,2);
+
+	// fmpz_mod(output, output, p);
+	// fmpz_tdiv_q_2exp(output,output,1);
 
 	free(str_yL);
 	free(str_yR);
@@ -45,9 +54,11 @@ int get_alpha_SHA256( fmpz_t output, fmpz_t p, fmpz_t yL, fmpz_t yR, qfb_t CL, q
 }
 
 
-int EvalBounded_origin_prover(_struct_pp_ *pp, qfb_t* C, const fmpz_t z, fmpz_t* y, fmpz_t* b, _struct_poly_* poly, _struct_prover_timer_* p_runtime) 
+int EvalBounded_origin_prover(_struct_pp_ *pp, qfb_t* C, const fmpz_t z, fmpz_t* y, fmpz_t* b, _struct_poly_* poly,int testbit,  _struct_prover_timer_* p_runtime) 
 {
-	static int isfirst = 0;
+	static struct timeval before1[10]={0}, after1[10] = {0};
+	static unsigned long long int RunTime1[10] = {0};
+	static int isfirst = 0,firstd = 0;
 	//static BN_CTX* ctx;
 	static _struct_proof_ pf;
 	static fmpz_t z_tmp;
@@ -56,7 +67,14 @@ int EvalBounded_origin_prover(_struct_pp_ *pp, qfb_t* C, const fmpz_t z, fmpz_t*
 	static qfb_t poe_w;
 	static qfb_t poe_u;
 	static qfb_t poe_x;
-	
+
+	//proof size
+	static fmpz_t pf_yl;
+	static fmpz_t pf_yr;
+	static fmpz_t pf_cl;
+	static fmpz_t pf_cr;
+	static fmpz_t pf_q;	
+
 	TimerOn();
 
 	if(isfirst == 0)
@@ -70,6 +88,14 @@ int EvalBounded_origin_prover(_struct_pp_ *pp, qfb_t* C, const fmpz_t z, fmpz_t*
 		qfb_init(poe_u);
 		qfb_init(poe_x);
 
+		fmpz_init(pf_yr);
+		fmpz_init(pf_yl);
+		fmpz_init(pf_cr);
+		fmpz_init(pf_cl);
+		fmpz_init(pf_q);
+
+		firstd = (poly->d);
+
 		fL.Fx = (fmpz_t*)calloc(sizeof(fmpz_t), (poly->d));
 		fR.Fx = (fmpz_t*)calloc(sizeof(fmpz_t), (poly->d));
 		
@@ -82,11 +108,31 @@ int EvalBounded_origin_prover(_struct_pp_ *pp, qfb_t* C, const fmpz_t z, fmpz_t*
 	{		
 		//printf("d is 1... record f\n");
 		//TimerOn();
+		FILE *fp2 = fopen("record_.txt", "a+");
+		fprintf(fp2,"-------proof Size(final round)----------\n");
+		fprintf(fp2,"yL: %d \n", (int)fmpz_bits(pf_yl));
+		fprintf(fp2,"yR: %d \n", (int)fmpz_bits(pf_yr));
+		fprintf(fp2,"CL: %d \n", (int)fmpz_bits(pf_cl));
+		fprintf(fp2,"CR: %d \n", (int)fmpz_bits(pf_cr));
+		fprintf(fp2,"Q: %d \n", (int)fmpz_bits(pf_q));
+		fprintf(fp2,"f_hat: %d \n",(int) fmpz_bits(poly->Fx[-1]));
+		fprintf(fp2,"mu: %d \n",poly->mu);
+		fprintf(fp2,"proof size n*(|yL|+|yR|+|CL|+|CR|+|Q|+f_hat[-1]): %d \n", poly->mu*((int) fmpz_bits(pf_yl)+(int)fmpz_bits(pf_yr)+(int)fmpz_bits(pf_cr)+(int)fmpz_bits(pf_cl)+(int)fmpz_bits(pf_q))+(int) fmpz_bits(poly->Fx[-1]));
+		fprintf(fp2,"proof size(comm opt) n*(|yR|+|CR|+|Q|)+f_hat[-1]: %d \n", poly->mu*((int)fmpz_bits(pf_yr)+(int)fmpz_bits(pf_cr)+(int)fmpz_bits(pf_q))+(int) fmpz_bits(poly->Fx[-1]));
+		fprintf(fp2,"-------------------------------------\n");
+		fclose(fp2);
+
 		FILE *fp = fopen("./Txt/proof.txt", "a+");
 		fprintf(fp, "%s\n", fmpz_get_str(NULL, 16, poly->Fx[0]));
+		fseek(fp, 0, SEEK_SET); 
 		fclose(fp);
 		//RunTime_file_IO += TimerOff();
-		
+		free(fL.Fx);
+		free(fR.Fx);
+
+		isfirst = 0;
+		poly->d = firstd;
+
 		pf_clear(&pf);
 		fmpz_clear(z_tmp);
 		fmpz_clear(y_tmp);
@@ -119,7 +165,7 @@ int EvalBounded_origin_prover(_struct_pp_ *pp, qfb_t* C, const fmpz_t z, fmpz_t*
 		//RunTime_eval += TimerOff();
 		p_runtime->prover_total += TimerOff();
 
-		EvalBounded_origin_prover(pp, C, z, y, b, poly, p_runtime);
+		EvalBounded_origin_prover(pp, C, z, y, b, poly, testbit, p_runtime);
 	}
 	else
 	{
@@ -129,7 +175,7 @@ int EvalBounded_origin_prover(_struct_pp_ *pp, qfb_t* C, const fmpz_t z, fmpz_t*
 		TimerOn();
 
 		//printf("P computes fL\n");
-		//TimerOn2(&before[1]);
+		TimerOn2(&before1[1]);
 		for(i = 0; i < d_; i++){	//fL.Fx[i] = poly->Fx[i];
 			fmpz_init(fL.Fx[i]);// = BN_new();
 			fmpz_set(fL.Fx[i], poly->Fx[i]);
@@ -142,10 +188,11 @@ int EvalBounded_origin_prover(_struct_pp_ *pp, qfb_t* C, const fmpz_t z, fmpz_t*
 			fmpz_set(fR.Fx[i] , poly->Fx[d_ + i]);
 		}
 		fR.d = d_;
-		//RunTime[1] += TimerOff2(&before[1], &after[1]);	// 14
+		RunTime1[1] += TimerOff2(&before1[1], &after1[1]);	// 14
 		
 		//printf("P computes yL\n");	
 		//TimerOn2(&before[2]);	
+		TimerOn2(&before1[2]);	
 		fmpz_one(z_tmp);
 		fmpz_zero(y_tmp);
 		fmpz_zero(pf.yL);
@@ -181,11 +228,13 @@ int EvalBounded_origin_prover(_struct_pp_ *pp, qfb_t* C, const fmpz_t z, fmpz_t*
 		}while(i< fR.d);
 		//printf("yR : "); fmpz_print(pf.yR); //printf("\n");
 		//RunTime[2] += TimerOff2(&before[2], &after[2]);	// 14
+		RunTime1[2] += TimerOff2(&before1[2], &after1[2]);	// 14
 		p_runtime->prover_total += TimerOff();
 
 
 		//printf("P computes CL\n");
 		//TimerOn2(&before[3]);
+		TimerOn2(&before1[3]);
 		TimerOn();
 		commit_new(&pf.CL, *pp, fL);
 		int prover_cl_time =  TimerOff();
@@ -202,27 +251,33 @@ int EvalBounded_origin_prover(_struct_pp_ *pp, qfb_t* C, const fmpz_t z, fmpz_t*
 		//printf("P computes alpha(hash)\n");
 		//TimerOn2(&before[4]);
 		TimerOn();
-		get_alpha_SHA256(pf.alpha, pp->p, pf.yL, pf.yR, pf.CL.C, pf.CR.C);
+		TimerOn2(&before1[4]);
+		get_alpha_SHA256(pf.alpha, pp->p, pf.yL, pf.yR, pf.CL.C, pf.CR.C, pp->security_level);
 		//fmpz_set_ui(pf.alpha,1);
 		//fmpz_set_ui(pf.alpha,19);			
 		//RunTime[4] += TimerOff2(&before[4], &after[4]);	// 15
+		RunTime1[4] += TimerOff2(&before1[4], &after1[4]);	// 15
 		p_runtime->prover_total+= TimerOff();
 
 		//POE(CR, C/CL, q^(d'+1)) run	
 		//TimerOn2(&before[5]);
 		TimerOn();
+		TimerOn2(&before1[5]);
 		qfb_set(poe_u, pf.CR.C);
 		qfb_inverse(poe_w, pf.CL.C);
 		qfb_nucomp(poe_w, poe_w, *C, pp->G, pp->L);
 		qfb_reduce(poe_w, poe_w, pp->G);
+		RunTime1[5] += TimerOff2(&before1[5], &after1[5]);	// 15
 
 		//BN_copy(poe_u, CR.C);
 		//BN_mod_inverse(poe_w, CL.C, pp->G, ctx);
 		//BN_mod_mul(poe_w, poe_w, *C, pp->G, ctx);
 
+		TimerOn2(&before1[6]);
 		//eval_pk(pf.POE_proof, poe_w, poe_u, pp, d_+1);
 		eval_pk_test(pf.POE_proof, poe_w, poe_u, &fR, pp, d_);
 
+		RunTime1[6] += TimerOff2(&before1[6], &after1[6]);	// 15
 		int poe_time = TimerOff();
 		p_runtime->prover_total += poe_time;
 		p_runtime->prover_POE += poe_time;
@@ -232,6 +287,7 @@ int EvalBounded_origin_prover(_struct_pp_ *pp, qfb_t* C, const fmpz_t z, fmpz_t*
 		//printf("y' <- (a*yL + yR) mod p \n");
 		//TimerOn2(&before[6]);
 		TimerOn();
+		TimerOn2(&before1[7]);
 		fmpz_mul(y_tmp, pf.alpha, pf.yL);
 		fmpz_mod(y_tmp, y_tmp, pp->p);
 		
@@ -244,16 +300,20 @@ int EvalBounded_origin_prover(_struct_pp_ *pp, qfb_t* C, const fmpz_t z, fmpz_t*
 		//printf("C' <- CL^a CR\n");
 		qfb_pow_with_root(*C, pf.CL.C, pp->G, pf.alpha, pp->L);
 		qfb_nucomp(*C, *C, pf.CR.C, pp->G, pp->L);
-		qfb_reduce(*C, *C, pp->G);;
+		qfb_reduce(*C, *C, pp->G);
 
 		//printf("b' <- b((p+1)/2)\n");
-		fmpz_set(y_tmp,pp->p);
-		fmpz_add_ui(y_tmp,y_tmp,1);
-		fmpz_tdiv_q_2exp(y_tmp,y_tmp,1);		//BN_rshift1(y_tmp,y_tmp);
-		fmpz_mul(*b, *b, y_tmp);
+		fmpz_mul_2exp(*b, *b, pp->security_level);
+
+		// fmpz_set(y_tmp,pp->p);
+		// fmpz_add_ui(y_tmp,y_tmp,1);
+		// fmpz_tdiv_q_2exp(y_tmp,y_tmp,1);		//BN_rshift1(y_tmp,y_tmp);
+		// fmpz_mul(*b, *b, y_tmp);
 		//RunTime[6] += TimerOff2(&before[6], &after[6]);	// 15
 		
 		//printf("f' <- a*fL + fR\n");
+		RunTime1[7] += TimerOff2(&before1[7], &after1[7]);	// 15
+		TimerOn2(&before1[8]);
 		//TimerOn2(&before[7]);
 		i=0;
 		do{
@@ -275,266 +335,27 @@ int EvalBounded_origin_prover(_struct_pp_ *pp, qfb_t* C, const fmpz_t z, fmpz_t*
 			i++;
 		}while(i < poly->d);
 		poly->d = d_;
+		RunTime1[8] += TimerOff2(&before1[8], &after1[8]);	// 15
 		//RunTime_eval += TimerOff();
-		//printf("P run EvalBounded_prover2(pp, C', z, y', d', b', f'(X))\n\n");
+		//printf("P run EvalBounded_prover2(pp, C', z, y', d', b', f'(X))\n\n");		fmpz_add(pf_yl,pf_yl,pf.yL);
+		fmpz_add(pf_yr,pf_yr,pf.yR);
+		fmpz_add(pf_cl,pf_cl,pf.CL.C);
+		fmpz_add(pf_cr,pf_cr,pf.CR.C);
+		fmpz_add(pf_q,pf_q,pf.POE_proof);
 		p_runtime->prover_total += TimerOff();
 
 		//TimerOn();
 		Write_proof("./Txt/proof.txt", pf, "a+");	
 		//RunTime_file_IO += TimerOff();
 
-		EvalBounded_origin_prover(pp, C, z, y, b, poly, p_runtime);
+		EvalBounded_origin_prover(pp, C, z, y, b, poly, testbit, p_runtime);
 	}
 
 	return 1;
 }
 
 
-int EvalBounded_prover(_struct_pp_ *pp, qfb_t* C, const fmpz_t z, fmpz_t* y, fmpz_t* b, _struct_poly_* poly) 
-{
-	static int isfirst = 0;
-	//static BN_CTX* ctx;
-	static _struct_proof_ pf;
-	static fmpz_t z_tmp;
-	static fmpz_t y_tmp;
-	static _struct_poly_ fL, fR;
-	static qfb_t poe_w;
-	static qfb_t poe_u;
-	static qfb_t poe_x;
-
-	if(isfirst == 0)
-	{
-		printf("d : %d\n", poly->d);
-		//TimerOn();
-		pf_init(&pf);
-		fmpz_init(y_tmp);
-		fmpz_init(z_tmp);
-		qfb_init(poe_w);
-		qfb_init(poe_u);
-		qfb_init(poe_x);
-
-		fL.Fx = (fmpz_t*)calloc(sizeof(fmpz_t), (poly->d));
-		fR.Fx = (fmpz_t*)calloc(sizeof(fmpz_t), (poly->d));
-		
-		isfirst = 1;
-		//RunTime_eval += TimerOff();
-	}
-
-	if(poly->d == 1)
-	{		
-		printf("d is zero... record f\n");
-		//TimerOn();
-		FILE *fp = fopen("./Txt/proof.txt", "a+");
-		fprintf(fp, "%s\n", fmpz_get_str(NULL, 16, poly->Fx[0]));
-		fclose(fp);
-		//RunTime_file_IO += TimerOff();
-		
-		pf_clear(&pf);
-		fmpz_clear(z_tmp);
-		fmpz_clear(y_tmp);
-		qfb_clear(poe_w);
-		qfb_clear(poe_u);
-		qfb_clear(poe_x);
-	}	
-	else if( ((poly->d)%2) == 1 )
-	{
-		//printf("d is odd  [d : %d -> d' : %d]\n", poly->d, poly->d + 1);
-		//TimerOn();
-		//TimerOn2(&before[0]);
-
-		qfb_pow_with_root(*C, *C, pp->G, pp->q, pp->L);
-
-		fmpz_mul(*y, *y, z);
-		fmpz_mod(*y, *y, pp->p);	// y=y*z mod p
-		fmpz_set_ui(y_tmp, poly->d);
-		fmpz_mul(*b, *b, y_tmp);	// b =  bd
-		
-		poly->d = poly->d + 1;				//d = d + 1		
-		fmpz_init(poly->Fx[poly->d]);
-	
-		for(int i = poly->d-1; i >= 0; i--){// f'(X) = Xf(X);
-			fmpz_set(poly->Fx[i+1], poly->Fx[i]);
-		}
-		fmpz_zero(poly->Fx[0]);	
-		//RunTime[0] += TimerOff2(&before[0], &after[0]);	// 14
-
-		//RunTime_eval += TimerOff();
-		EvalBounded_prover(pp, C, z, y, b, poly);
-	}
-	else
-	{
-		int i, j, k;
-		int d_ = ((poly->d)/2); //*d = ((*d+1)>>1)-1;		// P,V compute
-		//printf("d+1 is even [d : %d -> d' : %d]\n", poly->d, d_);
-		//TimerOn();
-
-		//printf("P computes fL\n");
-		//TimerOn2(&before[1]);
-		for(i=0; i< poly->d; i++)
-		{
-			fmpz_init(fL.Fx[i]);
-			fmpz_init(fR.Fx[i]);
-
-			if(i%2 == 0)
-				fmpz_set(fL.Fx[i], poly->Fx[i]);
-			else
-				fmpz_set(fR.Fx[i-1], poly->Fx[i]);
-		}
-		fL.d = poly->d;
-		fR.d = poly->d - 1;
-		//RunTime[1] += TimerOff2(&before[1], &after[1]);	// 14	
-		//printf("P computes yL\n");	
-		//TimerOn2(&before[2]);	
-
-
-		//printf("P computes CR\n");
-		commit_new(&pf.CL, *pp, fL);
-		commit_new(&pf.CR, *pp, fR);
-
-		for( i = j = k = 0; i< poly->d; i++)
-		{
-			if( i%2 == 0 )
-			{
-				fmpz_set(fL.Fx[j], poly->Fx[i]);
-				j++;
-			}
-			else{
-				fmpz_set(fR.Fx[k], poly->Fx[i]);
-				k++;
-			}
-		}
-		fL.d = fR.d = d_;
-
-		fmpz_t z_sqr;
-		fmpz_init(z_sqr);
-		fmpz_one(z_tmp);
-		fmpz_mul(z_sqr, z_tmp, z);
-		fmpz_zero(y_tmp);
-		fmpz_zero(pf.yL);
-		i=0;
-		do{
-			fmpz_mul(y_tmp, fL.Fx[i], z_tmp);
-			fmpz_mod(y_tmp, y_tmp, pp->p);
-
-			fmpz_add(pf.yL, pf.yL, y_tmp);
-			fmpz_mod(pf.yL, pf.yL, pp->p);
-
-
-			fmpz_mul(z_tmp, z_tmp, z_sqr);
-			fmpz_mod(z_tmp, z_tmp, pp->p);	
-			i++;
-		}while(i< fL.d);
-		//printf("yL : "); fmpz_print(pf.yL); //printf("\n");
-
-		//printf("P computes yR\n");	
-		fmpz_one(z_tmp);
-		fmpz_zero(y_tmp);
-		fmpz_zero(pf.yR);
-		i=0;
-		do{
-			fmpz_mul(y_tmp, fR.Fx[i], z_tmp);
-			fmpz_mod(y_tmp, y_tmp, pp->p);
-
-			fmpz_add(pf.yR, pf.yR, y_tmp);
-			fmpz_mod(pf.yR, pf.yR, pp->p);
-
-			fmpz_mul(z_tmp, z_tmp, z_sqr);
-			fmpz_mod(z_tmp, z_tmp, pp->p);	
-			i++;
-		}while(i< fR.d);
-		//printf("yR : "); fmpz_print(pf.yR); //printf("\n");
-		//RunTime[2] += TimerOff2(&before[2], &after[2]);	// 14
-
-
-		//printf("P computes CL\n");
-		//TimerOn2(&before[3]);
-		//RunTime[3] += TimerOff2(&before[3], &after[3]);	// 15
-
-		//printf("P computes alpha(hash)\n");
-		//TimerOn2(&before[4]);
-		get_alpha_SHA256(pf.alpha, pp->p, pf.yL, pf.yR, pf.CL.C, pf.CR.C);
-		fmpz_set_ui(pf.alpha,1);
-		//fmpz_set_ui(pf.alpha,19);			
-		//RunTime[4] += TimerOff2(&before[4], &after[4]);	// 15
-		//POE(CR, C/CL, q^(d'+1)) run	
-		//TimerOn2(&before[5]);
-		qfb_set(poe_u, pf.CR.C);
-		qfb_inverse(poe_w, pf.CL.C);
-		qfb_nucomp(poe_w, poe_w, *C, pp->G, pp->L);
-		qfb_reduce(poe_w, poe_w, pp->G);
-
-		//BN_copy(poe_u, CR.C);
-		//BN_mod_inverse(poe_w, CL.C, pp->G, ctx);
-		//BN_mod_mul(poe_w, poe_w, *C, pp->G, ctx);
-
-		eval_pk(pf.POE_proof, poe_w, poe_u, pp, 1);
-		//eval_pk_test(pf.POE_proof, poe_w, poe_u, &fR, pp, d_+1);
-
-		//RunTime[5] += TimerOff2(&before[5], &after[5]);	// 15
-		/***********************************		 POE		***********************************/
-		//printf("y' <- (a*yL + yR) mod p \n");
-		//TimerOn2(&before[6]);
-		fmpz_mul(y_tmp, pf.alpha, pf.yL);
-		fmpz_mod(y_tmp, y_tmp, pp->p);
-		
-		fmpz_add(*y, y_tmp, pf.yR);
-		fmpz_mod(*y, *y, pp->p);
-
-		//BN_mod_mul(y_tmp, alpha, yL, pp->p, ctx);
-		//BN_mod_add(*y, y_tmp, yR, pp->p, ctx);
-		
-		//printf("C' <- CL^a CR\n");
-		qfb_pow_with_root(*C, pf.CL.C, pp->G, pf.alpha, pp->L);
-		qfb_nucomp(*C, *C, pf.CR.C, pp->G, pp->L);
-		qfb_reduce(*C, *C, pp->G);;
-
-		//printf("b' <- b((p+1)/2)\n");
-		fmpz_set(y_tmp,pp->p);
-		fmpz_add_ui(y_tmp,y_tmp,1);
-		fmpz_tdiv_q_2exp(y_tmp,y_tmp,1);		//BN_rshift1(y_tmp,y_tmp);
-		fmpz_mul(*b, *b, y_tmp);
-		//RunTime[6] += TimerOff2(&before[6], &after[6]);	// 15
-		
-		//printf("f' <- a*fL + fR\n");
-		//TimerOn2(&before[7]);
-
-
-		i=0;
-		do{
-			fmpz_mul(y_tmp, pf.alpha, fL.Fx[i]);
-			fmpz_mod(y_tmp, y_tmp, *b);
-
-			fmpz_add(poly->Fx[i], y_tmp, fR.Fx[i]);
-			fmpz_mod(poly->Fx[i], poly->Fx[i], *b);
-
-			//poly->Fx[i]  = alpha*fL.Fx[i] + fR.Fx[i];			
-			fmpz_clear(fR.Fx[i]);
-			fmpz_clear(fL.Fx[i]);
-			i++;
-		}while(i < d_);
-		//RunTime[7] += TimerOff2(&before[7], &after[7]);	// 15
-
-		do{
-			fmpz_clear(poly->Fx[i]);
-			i++;
-		}while(i < poly->d);
-		poly->d = d_;
-		
-		//RunTime_eval += TimerOff();
-		//printf("P run EvalBounded_prover2(pp, C', z, y', d', b', f'(X))\n\n");
-
-		//TimerOn();
-		Write_proof("./Txt/proof.txt", pf, "a+");	
-		//RunTime_file_IO += TimerOff();
-
-		EvalBounded_prover(pp, C, z, y, b, poly);
-	}
-
-	return 1;
-}
-
-
-int Eval_prover(_struct_pp_* pp, _struct_commit_* cm, _struct_poly_* poly) // ( pp, z, y, d, f~(X) )
+int Eval_prover(_struct_pp_* pp, _struct_commit_* cm, _struct_poly_* poly, int testbit) // ( pp, z, y, d, f~(X) )
 {
 	int i;
 	fmpz_t zero, p, z, z_tmp, y;
@@ -582,7 +403,7 @@ int Eval_prover(_struct_pp_* pp, _struct_commit_* cm, _struct_poly_* poly) // ( 
 	}while(i<= poly->d);
 
 	//printf("EvalBounded_prover2 Start\n");
-	EvalBounded_origin_prover(pp, &C, z, &y, &p, poly, p_runtime);
+	EvalBounded_origin_prover(pp, &C, z, &y, &p, poly, testbit, p_runtime);
 
 	printf("EVAL_PROVER_Total %12llu [us]\r\n", prover_runtime.prover_total);
 	printf("EVAL_PROVER_CL %12llu [us]\r\n", prover_runtime.prover_CL);

@@ -154,12 +154,24 @@ int verify_pk(qfb_t pf, qfb_t w, qfb_t u, _struct_pp_ *pp, const int d)
 int eval_pk_test(qfb_t pf, qfb_t w,  qfb_t u, _struct_poly_* fR, _struct_pp_ *pp, const int d)
 {	//eval_pk(POE_proof, poe_w, poe_u, poe_x, d_+1, pp->G, NULL);								
 	// u^x mod G = w mod G
+	TimerOn2(&before1[0]);
 	int i, flag = 1;
 	int num = (int)fmpz_bits(pp->q) - 1;
-	int t = (num) * d;
+	unsigned int t = (num) * d;
+	int cnt = 0;
+
+	fmpz_t tmp, tmp_1, tmp_2;
+	fmpz_poly_t t_poly1;
+	fmpz_poly_t t_poly2;
+	fmpz_poly_t t_poly3;
+
+	_struct_commit_ cm;
+	_struct_poly_ f_out;
 
 	qfb_t g;
-	fmpz_t l, x, tmp, r;
+	fmpz_t l, x, r;
+	fmpz_t f_q;
+
 	//fmpz_t bn_tmp1, bn_tmp2;
 	
 	qfb_init(g);
@@ -183,25 +195,26 @@ int eval_pk_test(qfb_t pf, qfb_t w,  qfb_t u, _struct_poly_* fR, _struct_pp_ *pp
 	fmpz_setbit(x, t);
 	fmpz_tdiv_qr(tmp, r, x, l);
 	///////////////////////////////////////////////////////////////
-	fmpz_t tmp_1, tmp_2;
-	
-	_struct_poly_ f_out;
-	int cnt = 0;
 
-
-	fmpz_poly_t t_poly1;
-	fmpz_poly_t t_poly2;
-	fmpz_poly_t t_poly3;
 	fmpz_poly_init(t_poly1);
     fmpz_poly_init(t_poly2);
     fmpz_poly_init(t_poly3);
-	//f_in = (fmpz_t*)calloc(sizeof(fmpz_t), d);
-	//f_out.d = 2*d - 1;
-	//f_out.Fx = (fmpz_t*)calloc(sizeof(fmpz_t), f_out.d);
-	//for(int i = 0; i < f_out.d; i++)
-	//	fmpz_init(f_out.Fx[i]);
+	fmpz_init(f_q);
+	fmpz_zero(f_q);
+
+	for(i = fR->d-1; i >= 0; i--)
+	{
+		fmpz_mul_2exp(f_q, f_q, num);
+		fmpz_add(f_q, f_q, fR->Fx[i]);
+		// fmpz_mod(open->r, open->r, l);
+	}
+
 	fmpz_init_set(tmp_1, tmp);
-	fmpz_init(tmp_2);
+	fmpz_mul(tmp_1, f_q, tmp_1);
+	fmpz_init(tmp_2);	
+	cnt = 0;
+	RunTime1[0] += TimerOff2(&before1[0], &after1[0]);	
+	TimerOn2(&before1[1]);
 	//printf("poe set f'\r\n");
 	while(fmpz_bits(tmp_1) > cnt*num)
 	{
@@ -215,6 +228,8 @@ int eval_pk_test(qfb_t pf, qfb_t w,  qfb_t u, _struct_poly_* fR, _struct_pp_ *pp
 		fmpz_poly_set_coeff_fmpz(t_poly2, cnt, tmp_2);
 		cnt++;
 	}
+	RunTime1[1] += TimerOff2(&before1[1], &after1[1]);	
+	TimerOn2(&before1[2]);
 
 	///////////////////////////////////////////////////////////////////////////////
 	//fmpz_poly_print(t_poly2); printf("\n");
@@ -229,29 +244,22 @@ int eval_pk_test(qfb_t pf, qfb_t w,  qfb_t u, _struct_poly_* fR, _struct_pp_ *pp
 
 
 	//printf("poe set f\r\n");
-	for(int i=0; i< fR->d; i++)
-		fmpz_poly_set_coeff_fmpz(t_poly1, i, fR->Fx[i]);
+	// for(int i=0; i< fR->d; i++)
+	// 	fmpz_poly_set_coeff_fmpz(t_poly1, i, fR->Fx[i]);
 
 	//printf("poe f*f'\r\n");
-	fmpz_poly_mul_SS(t_poly3, t_poly2, t_poly1);
-	f_out.d = fR->d + cnt - 1;	
-	f_out.Fx = (fmpz_t*)calloc(sizeof(fmpz_t), f_out.d + 1);
+	// fmpz_poly_mul_SS(t_poly3, t_poly2, t_poly1);
+	f_out.d = cnt;	
+	f_out.Fx = (fmpz_t*)calloc(f_out.d + 1, sizeof(fmpz_t));
 
 	//printf("poe poly -> fmpz_t'\r\n");
 	fmpz_zero(tmp_1);
 	for(int i=0; i< f_out.d; i++){
 		fmpz_init(f_out.Fx[i]);
-		fmpz_poly_get_coeff_fmpz(f_out.Fx[i], t_poly3, i);
+		fmpz_poly_get_coeff_fmpz(f_out.Fx[i], t_poly2, i);
 		fmpz_add(f_out.Fx[i], f_out.Fx[i], tmp_1);
 		fmpz_tdiv_qr(tmp_1, f_out.Fx[i], f_out.Fx[i], pp->q);
-			
-		//printf("%lu ", fmpz_bits(f_out.Fx[i]));
-		//printf("%s ", fmpz_get_str(NULL, 2, tmp_1));
-		//for(int j = fmpz_bits(tmp_1)-1; j >= 0; j--){
-		//	printf("%d", fmpz_tstbit(tmp_1, j) );
-		///}
-		//printf("\r\n");
-	}//printf("\r\n");
+	}
 
 	if(fmpz_is_zero(tmp_1) == 0)
 	{
@@ -260,21 +268,20 @@ int eval_pk_test(qfb_t pf, qfb_t w,  qfb_t u, _struct_poly_* fR, _struct_pp_ *pp
 		f_out.d++;		
 	}
 
-	fmpz_poly_clear(t_poly1);
-	fmpz_poly_clear(t_poly2);
-	fmpz_poly_clear(t_poly3);
-
 	//printf("poe commit %d\r\n", f_out.d);
-	_struct_commit_ cm;
 	commit_init(&cm);
 	commit_new(&cm, *pp, f_out);
 	qfb_set(pf,cm.C);
-	commit_clear(&cm);
 	//printf("poe end\r\n");
 	//printf("d : %d, cnt : %d\n", d, cnt);
 	///////////////////////////////////////////////////////////////
 	//qfb_pow_with_root(pf, g, pp->G, tmp, pp->L);
-	
+	for(int i=0; i< f_out.d; i++)
+		fmpz_clear(f_out.Fx[i]);
+	free(f_out.Fx);
+
+	RunTime1[6] += TimerOff2(&before1[6], &after1[6]);	
+
 
 	//printf("1 :");qfb_print(cm.C);printf("\n\n");		
 	//printf("2 :");qfb_print(pf);printf("\n\n");
@@ -282,6 +289,11 @@ int eval_pk_test(qfb_t pf, qfb_t w,  qfb_t u, _struct_poly_* fR, _struct_pp_ *pp
 	//RunTime_poe1 = TimerOff();
 	//RunTime_poe1 += TimerOff();
 	//printf("%s ", BN_bn2hex(pf));
+	commit_clear(&cm);
+
+	fmpz_poly_clear(t_poly1);
+	fmpz_poly_clear(t_poly2);
+	fmpz_poly_clear(t_poly3);
 
 	qfb_clear(g);
 	fmpz_clear(x);

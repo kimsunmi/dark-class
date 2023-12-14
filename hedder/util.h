@@ -7,7 +7,7 @@
     int Read_Commit(const char* path, _struct_commit_* cm);
     int Write_Commit(const char* path, const _struct_commit_* cm);
 	
-    int make_poly(const char* path, unsigned int d);
+    int make_poly(const char* path, unsigned int d, unsigned int mu);
     int Read_poly(const char* path, _struct_poly_* poly);
     int poly_clear(_struct_poly_* poly);
 

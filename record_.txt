@@ -1,0 +1,77 @@
+-------proof Size(final round)----------
+yL: 0 
+yR: 130 
+CL: 257 
+CR: 257 
+Q: 257 
+f_hat: 11 
+mu: 0 
+proof size n*(|yL|+|yR|+|CL|+|CR|+|Q|+f_hat[-1]): 11 
+proof size(comm opt) n*(|yR|+|CR|+|Q|)+f_hat[-1]: 11 
+-------------------------------------
+-------proof Size(final round)----------
+yL: 0 
+yR: 130 
+CL: 257 
+CR: 257 
+Q: 257 
+f_hat: 11 
+mu: 7 
+proof size n*(|yL|+|yR|+|CL|+|CR|+|Q|+f_hat[-1]): 6318 
+proof size(comm opt) n*(|yR|+|CR|+|Q|)+f_hat[-1]: 4519 
+-------------------------------------
+-------proof Size(final round)----------
+yL: 0 
+yR: 130 
+CL: 258 
+CR: 258 
+Q: 258 
+f_hat: 11 
+mu: 7 
+proof size n*(|yL|+|yR|+|CL|+|CR|+|Q|+f_hat[-1]): 6339 
+proof size(comm opt) n*(|yR|+|CR|+|Q|)+f_hat[-1]: 4533 
+-------------------------------------
+-------proof Size(final round)----------
+yL: 0 
+yR: 130 
+CL: 257 
+CR: 257 
+Q: 257 
+f_hat: 12 
+mu: 8 
+proof size n*(|yL|+|yR|+|CL|+|CR|+|Q|+f_hat[-1]): 7220 
+proof size(comm opt) n*(|yR|+|CR|+|Q|)+f_hat[-1]: 5164 
+-------------------------------------
+-------proof Size(final round)----------
+yL: 0 
+yR: 130 
+CL: 257 
+CR: 257 
+Q: 258 
+f_hat: 13 
+mu: 9 
+proof size n*(|yL|+|yR|+|CL|+|CR|+|Q|+f_hat[-1]): 8131 
+proof size(comm opt) n*(|yR|+|CR|+|Q|)+f_hat[-1]: 5818 
+-------------------------------------
+-------proof Size(final round)----------
+yL: 0 
+yR: 130 
+CL: 258 
+CR: 258 
+Q: 258 
+f_hat: 14 
+mu: 10 
+proof size n*(|yL|+|yR|+|CL|+|CR|+|Q|+f_hat[-1]): 9054 
+proof size(comm opt) n*(|yR|+|CR|+|Q|)+f_hat[-1]: 6474 
+-------------------------------------
+-------proof Size(final round)----------
+yL: 0 
+yR: 131 
+CL: 257 
+CR: 257 
+Q: 257 
+f_hat: 15 
+mu: 11 
+proof size n*(|yL|+|yR|+|CL|+|CR|+|Q|+f_hat[-1]): 9937 
+proof size(comm opt) n*(|yR|+|CR|+|Q|)+f_hat[-1]: 7110 
+-------------------------------------
