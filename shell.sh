@@ -1,6 +1,6 @@
 #!/bin/bash
 
-FILENAME="./1131_dark_class"
+FILENAME="./test_for_pp"
 
 echo "" > ${FILENAME}
 make clean_all
@@ -14,7 +14,7 @@ do
     echo "================ test n = $i ================" >> ${FILENAME}
     echo "SETUP...."
     echo "SETUP...." >>  ${FILENAME}
-    ./PC_Setup 512 $i >> ${FILENAME}
+    ./PC_Setup 2048 $i >> ${FILENAME}
     echo >> ${FILENAME}
     echo "OPEN...."
     echo "OPEN...." >>  ${FILENAME}

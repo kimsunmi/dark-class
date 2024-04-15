@@ -1,0 +1,110 @@
+------public parameter-----
+parameter size 4734
+-------public parameter----------
+N: 2048 
+g_a: 512 
+g_b: 511 
+g_c: 1535 
+p: 128 
+|N|+|g|+|p|: 4734 
+-------public parameter----------
+commit size:  3070
+-------proof Size(final round)----------
+yL: 130 
+yR: 131 
+CL: 3076 
+CR: 3071 
+Q: 3073 
+f_hat: 11 
+mu: 7 
+proof size n*(|yL|+|yR|+|CL|+|CR|+|Q|+f_hat[-1]): 66378 
+proof size(comm opt) n*(|yR|+|CR|+|Q|)+f_hat[-1]: 43936 
+-------------------------------------
+------public parameter-----
+parameter size 4734
+-------public parameter----------
+N: 2048 
+g_a: 512 
+g_b: 511 
+g_c: 1535 
+p: 128 
+|N|+|g|+|p|: 4734 
+-------public parameter----------
+commit size:  3067
+-------proof Size(final round)----------
+yL: 130 
+yR: 130 
+CL: 3077 
+CR: 3076 
+Q: 3076 
+f_hat: 12 
+mu: 8 
+proof size n*(|yL|+|yR|+|CL|+|CR|+|Q|+f_hat[-1]): 75924 
+proof size(comm opt) n*(|yR|+|CR|+|Q|)+f_hat[-1]: 50268 
+-------------------------------------
+------public parameter-----
+parameter size 4732
+-------public parameter----------
+N: 2048 
+g_a: 512 
+g_b: 509 
+g_c: 1535 
+p: 128 
+|N|+|g|+|p|: 4732 
+-------public parameter----------
+commit size:  3066
+-------proof Size(final round)----------
+yL: 131 
+yR: 130 
+CL: 3075 
+CR: 3075 
+Q: 3077 
+f_hat: 13 
+mu: 9 
+proof size n*(|yL|+|yR|+|CL|+|CR|+|Q|+f_hat[-1]): 85405 
+proof size(comm opt) n*(|yR|+|CR|+|Q|)+f_hat[-1]: 56551 
+-------------------------------------
+------public parameter-----
+parameter size 4735
+-------public parameter----------
+N: 2048 
+g_a: 512 
+g_b: 512 
+g_c: 1535 
+p: 128 
+|N|+|g|+|p|: 4735 
+-------public parameter----------
+commit size:  3060
+-------proof Size(final round)----------
+yL: 131 
+yR: 130 
+CL: 3079 
+CR: 3075 
+Q: 3076 
+f_hat: 14 
+mu: 10 
+proof size n*(|yL|+|yR|+|CL|+|CR|+|Q|+f_hat[-1]): 94924 
+proof size(comm opt) n*(|yR|+|CR|+|Q|)+f_hat[-1]: 62824 
+-------------------------------------
+------public parameter-----
+parameter size 4735
+-------public parameter----------
+N: 2048 
+g_a: 512 
+g_b: 512 
+g_c: 1535 
+p: 128 
+|N|+|g|+|p|: 4735 
+-------public parameter----------
+commit size:  3069
+-------proof Size(final round)----------
+yL: 131 
+yR: 131 
+CL: 3078 
+CR: 3077 
+Q: 3078 
+f_hat: 15 
+mu: 11 
+proof size n*(|yL|+|yR|+|CL|+|CR|+|Q|+f_hat[-1]): 104460 
+proof size(comm opt) n*(|yR|+|CR|+|Q|)+f_hat[-1]: 69161 
+-------------------------------------

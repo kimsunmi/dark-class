@@ -41,8 +41,7 @@ int KeyGen_Class_setup( _struct_pp_* pp, const int lamda, const int logD)
 	BN_generate_prime_ex(bn_p,128,1,NULL,NULL,NULL);
 	fmpz_set_str(pp->p, BN_bn2hex(bn_p), 16);
 
-	// pp->q에 128*(3*logD+1)에서 128*(2*pp->n + 1)+1로 변경
-	// pp->q에 논문에 따라 λ(2µ + log µ + 6) + 32µ^2 + 5로 재변경
+	// pp->q에 논문에 따라 λ(2µ + log µ + 6) + 32µ^2 + 5로 변경
 
 	// fmpz_init_set_ui(pp->q, 0);
 	fmpz_setbit(pp->q, 128*(6+ceil(log2(logD))+2*logD)+32*logD*logD+5); 

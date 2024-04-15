@@ -39,6 +39,22 @@ int Read_pp(const char* path, _struct_pp_* pp)
 //./Txt/pp.txt
 int Write_pp(const char* path, _struct_pp_* pp)
 {
+	int pp_size = 0;
+	pp_size += fmpz_bits(pp->G);
+	// printf("|N| %d\n", fmpz_bits(pp->cm_pp.G));
+	pp_size += fmpz_bits(pp->g->a);
+	pp_size += fmpz_bits(pp->g->b);
+	pp_size += fmpz_bits(pp->g->c);
+	// printf("|G| %d\n", fmpz_bits(pp->cm_pp.g));
+	pp_size += fmpz_bits(pp->p);
+	// printf("|p| %d\n", fmpz_bits(pp->p));
+	FILE *fp2;
+
+	fp2 = fopen("record_size.txt","a+");
+	fprintf(fp2,"------public parameter-----\n");
+	fprintf(fp2,"parameter size %d\n", pp_size);
+	fclose(fp2);
+
 	FILE *fp;
 
 	fp = fopen(path,"w");
@@ -83,10 +99,19 @@ int Read_Commit(const char* path, _struct_commit_* cm)
 
 //"./Txt/commit.txt"
 int Write_Commit(const char* path, const _struct_commit_* cm)
-{
+{	
+	int commit_size = 0;
+	commit_size += fmpz_bits(cm->C->a);
+	commit_size += fmpz_bits(cm->C->b);
+	commit_size += fmpz_bits(cm->C->c);
+
+	FILE *fp2 = fopen("record_size.txt", "a+");
+	fprintf(fp2,"-------public parameter----------\n");
+	fprintf(fp2, "commit size:  %d\n", commit_size);
+	fclose(fp2);
+
 	FILE *fp;
 	int i = 0, flag = 1;
-
 	fp = fopen(path, "w");
 	flag *= fprintf(fp,"%s %s %s\n", 
 		fmpz_get_str(NULL, 16, (cm->C)->a),

@@ -128,17 +128,10 @@ int commit_new(_struct_commit_* cm, _struct_pp_ pp, _struct_poly_ poly)
 		qfb_set(qfb_q_pt[0][0], pp.g);
 
 		TimerOn();
-		printf("q: " );qfb_print(pp.q);printf("\n");
-		printf("L: "); fmpz_print(pp.L);printf("\n");
-		printf("G: ");fmpz_print(pp.G);printf("\n");
-		printf("d: %d\n", d);
 
 		for(i=1; i<d; i++)
 		{
 			qfb_pow_with_root(qfb_q_pt[i][0], qfb_q_pt[i-1][0], pp.G, pp.q, pp.L);
-			// RunTime_commit = TimerOff();
-			// printf("qfb_pow_with_root:  %12llu [us]\n", RunTime_commit);
-			// TimerOn();
 			qfb_reduce(qfb_q_pt[i][0], qfb_q_pt[i][0], pp.G);
 		}
 
@@ -167,7 +160,7 @@ int commit_new_old(_struct_commit_* cm, _struct_pp_ pp, _struct_poly_ poly)
 
 	qfb_init(qfb_tmp);
 	qfb_principal_form(cm->C, pp.G);
-	qfb_principal_form(qfb_tmp, pp.G);
+	// qfb_principal_form(qfb_tmp, pp.G);
 
 	for(i = poly.d - 1; i >= 0; i--)
 	{
@@ -178,6 +171,9 @@ int commit_new_old(_struct_commit_* cm, _struct_pp_ pp, _struct_poly_ poly)
 		qfb_nucomp(cm->C, cm->C, qfb_tmp, pp.G, pp.L);
 		qfb_reduce(cm->C, cm->C, pp.G);
 	}
+
+	qfb_print(cm->C);
+	printf("\n");
 	qfb_clear(qfb_tmp);
 
 	return flag;

@@ -39,6 +39,17 @@ int main(int argc, char *argv[])
 	printf("KeyGen_Time_ %12llu [us]\n", RunTime_eval);
 	printf("KeyGen_I/O__ %12llu [us]\n", RunTime_file_IO);
 
+	// public parmaeter size: N, g, p
+	fp = fopen("record_size.txt", "a+");
+	fprintf(fp,"-------public parameter----------\n");
+	fprintf(fp, "N: %d \n", pp.security_level);
+	fprintf(fp, "g_a: %d \n", (int)fmpz_bits(pp.g->a));
+	fprintf(fp, "g_b: %d \n", (int)fmpz_bits(pp.g->b));
+	fprintf(fp, "g_c: %d \n", (int)fmpz_bits(pp.g->c));
+	fprintf(fp, "p: %d \n", (int)fmpz_bits(pp.p));
+	fprintf(fp, "|N|+|g|+|p|: %d \n", (int)fmpz_bits(pp.g->a)+(int)fmpz_bits(pp.g->b)+(int)fmpz_bits(pp.g->c)+(int)fmpz_bits(pp.p)+pp.security_level);
+	fclose(fp);
+
 	fp = fopen("record/setup.txt", "a+");
 	fprintf(fp, "%d %d %llu %llu\n", security_level, Degree, RunTime_file_IO, RunTime_eval);			
 	fclose(fp);
